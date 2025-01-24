@@ -1,17 +1,19 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://127.0.0.1:5500", // Allow Live Server origin
+    origin: process.env.CORS_ORIGIN,
     methods: ["GET", "POST"]
-  }
+  },
+  path: process.env.SOCKET_PATH
 });
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
@@ -43,5 +45,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port} in ${process.env.NODE_ENV} mode`);
 });

@@ -43,4 +43,8 @@ logs/
 *.tgz
 
 # Yarn Integrity file
-.yarn-integrity 
+.yarn-integrity
+
+# Docker
+.docker/
+docker-compose.override.yml 
