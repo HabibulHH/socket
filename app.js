@@ -4,7 +4,13 @@ const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://127.0.0.1:5500", // Allow Live Server origin
+    methods: ["GET", "POST"]
+  }
+});
+
 const port = 3000;
 
 app.get('/health', (req, res) => {
