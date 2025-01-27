@@ -53,8 +53,11 @@
 
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script>
-        // Connect to the socket server (assuming it runs on port 3000)
-        const socket = io('http://localhost:3000');
+        // Update the connection to use Nginx endpoint
+        const socket = io('http://localhost', {
+            transports: ['websocket', 'polling'],
+            path: '/socket.io'  // make sure this matches your Socket.IO server path
+        });
         const messagesDiv = document.getElementById('messages');
         const messageForm = document.getElementById('message-form');
         const messageInput = document.getElementById('message-input');

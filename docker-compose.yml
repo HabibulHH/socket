@@ -1,22 +1,40 @@
 version: '3.8'
-
 services:
-  socket-app:
-    build: .
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile    # using existing Node.js Dockerfile
     ports:
-      - "${PORT}:${PORT}"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    env_file:
-      - .env
+      - "3000:3000"
     environment:
-      - NODE_ENV=${NODE_ENV}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    restart: unless-stopped
+      - PORT=3000
     depends_on:
       - redis
+
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile    # using existing Node.js Dockerfile
+    ports:
+      - "3001:3000"  # Note: different host port, same container port
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PORT=3000
+    depends_on:
+      - redis
+
+  nginx:
+    build: 
+      context: ./docker/nginx   # path to new nginx dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - app1
+      - app2
 
   redis:
     image: redis:alpine
@@ -27,4 +45,4 @@ services:
     command: redis-server --appendonly yes
 
 volumes:
-  redis_data: 
+  redis_data:
