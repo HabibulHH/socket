@@ -1,6 +1,8 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const { createAdapter } = require('@socket.io/redis-adapter');
+const { createClient } = require('redis');
 require('dotenv').config();
 
 const app = express();
@@ -11,6 +13,20 @@ const io = socketIo(server, {
     methods: ["GET", "POST"]
   },
   path: process.env.SOCKET_PATH
+});
+
+// Add Redis adapter configuration
+const pubClient = createClient({
+  host: process.env.REDIS_HOST || 'redis',
+  port: process.env.REDIS_PORT || 6379
+});
+const subClient = pubClient.duplicate();
+
+Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+  io.adapter(createAdapter(pubClient, subClient));
+  console.log('Redis adapter connected');
+}).catch(err => {
+  console.error('Redis adapter error:', err);
 });
 
 const port = process.env.PORT || 3000;
