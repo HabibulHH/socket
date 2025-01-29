@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +7,87 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@heroicons/v2/24/solid/paper-airplane.js"></script>
+    <!-- Add Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#1E2028',
+                            200: '#252832',
+                            300: '#2F333D'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .dark-mode-toggle {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .dark .dark-mode-toggle {
+            background-color: #4B5563;
+        }
+
+        .dark-mode-toggle::after {
+            content: '';
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .dark .dark-mode-toggle::after {
+            transform: translateX(1.5rem);
+            background-color: #1E2028;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-[Inter]">
-    <div class="max-w-4xl mx-auto min-h-screen bg-white shadow-lg">
+<body class="bg-gray-100 font-[Inter] dark:bg-dark-100">
+    <!-- Username Modal -->
+    <div id="username-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-dark-200 p-6 rounded-lg shadow-xl w-96">
+            <h2 class="text-xl font-semibold mb-4 dark:text-white">Enter your name</h2>
+            <form id="username-form" class="space-y-4">
+                <input 
+                    type="text" 
+                    id="username-input" 
+                    class="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 
+                           dark:bg-dark-300 dark:text-white"
+                    placeholder="Your name..."
+                    required
+                >
+                <button 
+                    type="submit"
+                    class="w-full px-6 py-2 rounded-lg font-medium text-white 
+                           bg-gradient-to-r from-blue-500 to-indigo-600 
+                           hover:from-blue-600 hover:to-indigo-700"
+                >
+                    Join Chat
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto min-h-screen bg-white dark:bg-dark-200 shadow-lg">
         <!-- Sticky Header -->
-        <div class="sticky top-0 bg-white border-b z-10 px-6 py-4">
+        <div class="sticky top-0 bg-white dark:bg-dark-200 border-b dark:border-gray-700 z-10 px-6 py-4">
             <div class="flex items-center justify-between">
                 <!-- Left side: Avatar and Status -->
                 <div class="flex items-center gap-4">
@@ -19,21 +95,37 @@
                         <img 
                             src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" 
                             alt="User Avatar" 
-                            class="w-12 h-12 rounded-full border-2 border-gray-200"
+                            class="w-12 h-12 rounded-full border-2 border-gray-200 dark:border-gray-600"
                         >
-                        <div id="online-status" class="absolute bottom-0 right-0 w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
+                        <div id="online-status" class="absolute bottom-0 right-0 w-4 h-4 bg-gray-400 rounded-full border-2 border-white dark:border-dark-200"></div>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-semibold text-gray-800">Real-time Chat</h1>
-                        <div id="connection-status" class="text-sm font-medium mt-1 text-yellow-600">
+                        <h1 class="text-2xl font-semibold text-gray-800 dark:text-white">Real-time Chat</h1>
+                        <div id="connection-status" class="text-sm font-medium mt-1 text-yellow-600 dark:text-yellow-500">
                             Connecting...
                         </div>
                     </div>
                 </div>
                 
-                <!-- Right side: Online Users Count (optional) -->
-                <div class="text-sm text-gray-600 font-medium">
-                    <span id="online-count">0</span> online
+                <div class="flex items-center gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <div class="flex items-center gap-2">
+                        <i class="ph ph-sun text-gray-600 dark:text-gray-400"></i>
+                        <button id="dark-mode-toggle" class="dark-mode-toggle" aria-label="Toggle dark mode"></button>
+                        <i class="ph ph-moon text-gray-600 dark:text-gray-400"></i>
+                    </div>
+                    
+                    <!-- Right side: Online Users Count (optional) -->
+                    <div class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-dark-300 dark:to-dark-300 rounded-full">
+                        <div class="flex items-center gap-1.5">
+                            <i class="ph ph-users text-lg text-blue-600 dark:text-blue-400"></i>
+                            <span id="online-count" class="font-semibold text-blue-600 dark:text-blue-400">0</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 pl-3 border-l border-blue-100 dark:border-gray-600">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">online now</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -41,7 +133,7 @@
         <!-- Chat Content -->
         <div class="p-6">
             <!-- Messages Container -->
-            <div id="messages" class="bg-gray-50 rounded-lg p-4 h-[calc(100vh-280px)] mb-4 overflow-y-auto space-y-3">
+            <div id="messages" class="bg-gray-50 dark:bg-dark-300 rounded-lg p-4 h-[calc(100vh-280px)] mb-4 overflow-y-auto space-y-3">
                 <!-- Messages will be inserted here by JavaScript -->
             </div>
 
@@ -50,7 +142,9 @@
                 <input 
                     type="text" 
                     id="message-input" 
-                    class="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 
+                           px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                           focus:border-transparent dark:bg-dark-300 dark:text-white"
                     placeholder="Type your message..."
                     autocomplete="off"
                 >
@@ -80,47 +174,108 @@
 
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script>
-        // Update the connection to use Nginx endpoint
-        const socket = io('http://localhost', {
-            transports: ['websocket', 'polling'],
-            path: '/socket.io'  // make sure this matches your Socket.IO server path
-        });
-        const messagesDiv = document.getElementById('messages');
-        const messageForm = document.getElementById('message-form');
-        const messageInput = document.getElementById('message-input');
-        const statusDiv = document.getElementById('connection-status');
-        const onlineStatus = document.getElementById('online-status');
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const html = document.documentElement;
+        
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            html.classList.add('dark');
+        }
 
-        // Connection status handling
-        socket.on('connect', () => {
-            statusDiv.textContent = 'Connected to server';
-            statusDiv.className = 'text-sm font-medium mt-1 text-green-600';
-            onlineStatus.className = 'absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white';
+        darkModeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('darkMode', html.classList.contains('dark'));
         });
 
-        socket.on('disconnect', () => {
-            statusDiv.textContent = 'Disconnected from server';
-            statusDiv.className = 'text-sm font-medium mt-1 text-red-600';
-            onlineStatus.className = 'absolute bottom-0 right-0 w-4 h-4 bg-gray-400 rounded-full border-2 border-white';
-        });
+        let username = '';
+        const usernameModal = document.getElementById('username-modal');
+        const usernameForm = document.getElementById('username-form');
+        const usernameInput = document.getElementById('username-input');
+        
+        // Hide the main chat interface initially
+        document.querySelector('.max-w-4xl').style.display = 'none';
 
-        // Message handling
-        messageForm.addEventListener('submit', (e) => {
+        usernameForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const message = messageInput.value.trim();
-            if (message) {
-                socket.emit('message', message);
-                messageInput.value = '';
+            username = usernameInput.value.trim();
+            if (username) {
+                usernameModal.style.display = 'none';
+                document.querySelector('.max-w-4xl').style.display = 'block';
+                // Connect to socket after username is set
+                initializeSocket();
             }
         });
 
-        socket.on('message', (msg) => {
-            const messageElement = document.createElement('div');
-            messageElement.className = 'p-3 bg-white rounded-lg shadow-sm';
-            messageElement.textContent = msg;
-            messagesDiv.appendChild(messageElement);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        });
+        function initializeSocket() {
+            // Update the connection to use Nginx endpoint
+            const socket = io('http://localhost', {
+                transports: ['websocket', 'polling'],
+                path: '/socket.io'  // make sure this matches your Socket.IO server path
+            });
+            const messagesDiv = document.getElementById('messages');
+            const messageForm = document.getElementById('message-form');
+            const messageInput = document.getElementById('message-input');
+            const statusDiv = document.getElementById('connection-status');
+            const onlineStatus = document.getElementById('online-status');
+
+            // Connection status handling
+            socket.on('connect', () => {
+                statusDiv.textContent = 'Connected to server';
+                statusDiv.className = 'text-sm font-medium mt-1 text-green-600';
+                onlineStatus.className = 'absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white';
+                // Emit username when connecting
+                socket.emit('join', username);
+            });
+
+            socket.on('disconnect', () => {
+                statusDiv.textContent = 'Disconnected from server';
+                statusDiv.className = 'text-sm font-medium mt-1 text-red-600';
+                onlineStatus.className = 'absolute bottom-0 right-0 w-4 h-4 bg-gray-400 rounded-full border-2 border-white';
+            });
+
+            // Message handling
+            messageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                if (message) {
+                    socket.emit('message', { username, message });
+                    messageInput.value = '';
+                }
+            });
+
+            socket.on('message', (data) => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'p-3 bg-white dark:bg-dark-200 rounded-lg shadow-sm';
+                
+                if (typeof data === 'string') {
+                    // System messages (join/leave notifications)
+                    messageElement.innerHTML = `<span class="text-gray-500 dark:text-gray-400 italic">${data}</span>`;
+                } else if (data.username && data.message) {
+                    // User messages with avatar
+                    messageElement.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <img 
+                                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(data.username)}" 
+                                    alt="${data.username}'s avatar" 
+                                    class="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-600"
+                                >
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex flex-col">
+                                    <span class="font-semibold text-blue-600 dark:text-blue-400 text-sm">${data.username}</span>
+                                    <span class="mt-1 dark:text-gray-300">${data.message}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                messagesDiv.appendChild(messageElement);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+        }
     </script>
 </body>
 </html> 

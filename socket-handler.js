@@ -1,6 +1,7 @@
 class SocketHandler {
     constructor(io) {
         this.io = io;
+        this.users = new Map(); // Store username by socket ID
     }
 
     initialize() {
@@ -10,21 +11,31 @@ class SocketHandler {
             // Join the broadcast room
             socket.join('broadcast');
             
-            // Send welcome message only to the new user
-            socket.emit('message', 'Welcome to the chat!');
-            
-            // Announce to others that someone joined
-            socket.to('broadcast').emit('message', 'A new user joined the chat');
+            // Handle user joining with username
+            socket.on('join', (username) => {
+                this.users.set(socket.id, username);
+                // Send welcome message only to the new user
+                socket.emit('message', `Welcome to the chat, ${username}!`);
+                // Announce to others that someone joined
+                socket.to('broadcast').emit('message', `${username} joined the chat`);
+            });
             
             // Handle incoming messages
-            socket.on('message', (msg) => {
+            socket.on('message', (data) => {
                 // Broadcast the message to everyone in the room (including sender)
-                this.io.to('broadcast').emit('message', `User said: ${msg}`);
+                this.io.to('broadcast').emit('message', {
+                    username: data.username,
+                    message: data.message
+                });
             });
 
             socket.on('disconnect', () => {
-                // Notify others when someone leaves
-                socket.to('broadcast').emit('message', 'A user left the chat');
+                const username = this.users.get(socket.id);
+                if (username) {
+                    // Notify others when someone leaves
+                    socket.to('broadcast').emit('message', `${username} left the chat`);
+                    this.users.delete(socket.id);
+                }
                 console.log('User disconnected');
             });
         });
