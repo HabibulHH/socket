@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 const { createClient } = require('redis');
+const SocketHandler = require('./socket-handler');
 require('dotenv').config();
 
 const app = express();
@@ -35,30 +36,9 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
-  
-  // Join the broadcast room
-  socket.join('broadcast');
-  
-  // Send welcome message only to the new user
-  socket.emit('message', 'Welcome to the chat!');
-  
-  // Announce to others that someone joined
-  socket.to('broadcast').emit('message', 'A new user joined the chat');
-  
-  // Handle incoming messages
-  socket.on('message', (msg) => {
-    // Broadcast the message to everyone in the room (including sender)
-    io.to('broadcast').emit('message', `User said: ${msg}`);
-  });
-
-  socket.on('disconnect', () => {
-    // Notify others when someone leaves
-    socket.to('broadcast').emit('message', 'A user left the chat');
-    console.log('User disconnected');
-  });
-});
+// Initialize socket handler
+const socketHandler = new SocketHandler(io);
+socketHandler.initialize();
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port} in ${process.env.NODE_ENV} mode`);
